@@ -178,10 +178,13 @@ Respond with a JSON object containing the parsed intent."""
             except ValueError:
                 pass
         
-        # Extract target files
+        # Extract target files and ensure it's a list
         target_files = llm_result.get("target_files", [])
         if not target_files and llm_result.get("target_file"):
             target_files = [llm_result["target_file"]]
+        # Ensure target_files is always a list
+        if not isinstance(target_files, list):
+            target_files = [target_files] if target_files else []
         
         # Generate code edits if needed
         code_edits = self._generate_code_edits(llm_result, user_input)

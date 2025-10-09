@@ -4,7 +4,7 @@ import os
 import time
 import json
 from typing import Dict, List, Optional, Any, Tuple
-from .models import ExecutionResult, SafetyCheck
+from ..core.models import ExecutionResult, SafetyCheck
 from ..utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -22,11 +22,11 @@ class SandboxExecutor:
     def _init_e2b_client(self) -> None:
         """Initialize E2B client."""
         try:
-            from e2b import Sandbox
+            from e2b_code_interpreter import Sandbox
             self.Sandbox = Sandbox
             logger.info("E2B client initialized successfully")
         except ImportError:
-            logger.error("E2B library not installed. Install with: pip install e2b")
+            logger.error("E2B library not installed. Install with: pip install e2b-code-interpreter")
             raise ImportError("E2B library not installed")
         except Exception as e:
             logger.error(f"Failed to initialize E2B client: {e}")
@@ -38,8 +38,9 @@ class SandboxExecutor:
             if self.current_sandbox:
                 await self.terminate_sandbox()
             
-            self.current_sandbox = self.Sandbox(template=template, api_key=self.api_key)
-            logger.info(f"Created sandbox with template: {template}")
+            # Updated E2B API - use create() method
+            self.current_sandbox = self.Sandbox.create(api_key=self.api_key)
+            logger.info(f"Created E2B code interpreter sandbox")
             return True
             
         except Exception as e:
@@ -108,13 +109,8 @@ class SandboxExecutor:
         """Upload files to sandbox."""
         try:
             for file_path, content in files.items():
-                # Create directory structure
-                dir_path = os.path.dirname(file_path)
-                if dir_path:
-                    await self.current_sandbox.filesystem.make_dir(dir_path, recursive=True)
-                
-                # Write file
-                await self.current_sandbox.filesystem.write(file_path, content)
+                # Use E2B code interpreter's filesystem API
+                self.current_sandbox.filesystem.write(file_path, content)
                 
             logger.info(f"Uploaded {len(files)} files to sandbox")
             
@@ -125,23 +121,35 @@ class SandboxExecutor:
     async def _execute_python(self, code: str, timeout: int) -> ExecutionResult:
         """Execute Python code."""
         try:
-            # Write code to temporary file
-            temp_file = "/tmp/execution.py"
-            await self.current_sandbox.filesystem.write(temp_file, code)
+            # Use E2B code interpreter's run_code method
+            execution = self.current_sandbox.run_code(code)
             
-            # Execute the file
-            process = await self.current_sandbox.process.start(
-                f"python {temp_file}",
-                timeout=timeout
-            )
+            # Collect output
+            stdout_text = ""
+            stderr_text = ""
             
-            await process.wait()
+            if hasattr(execution, 'logs'):
+                if hasattr(execution.logs, 'stdout'):
+                    stdout_text = "\n".join([str(log) for log in execution.logs.stdout])
+                if hasattr(execution.logs, 'stderr'):
+                    stderr_text = "\n".join([str(log) for log in execution.logs.stderr])
+            
+            if hasattr(execution, 'results'):
+                for result in execution.results:
+                    if hasattr(result, 'text'):
+                        stdout_text += f"\n{result.text}"
+                    else:
+                        stdout_text += f"\n{result}"
+            
+            success = not execution.error if hasattr(execution, 'error') else True
+            if hasattr(execution, 'error') and execution.error:
+                stderr_text += f"\n{execution.error.name}: {execution.error.value}"
             
             return ExecutionResult(
-                success=process.exit_code == 0,
-                stdout=process.stdout,
-                stderr=process.stderr,
-                exit_code=process.exit_code
+                success=success,
+                stdout=stdout_text.strip(),
+                stderr=stderr_text.strip(),
+                exit_code=0 if success else 1
             )
             
         except Exception as e:
@@ -339,7 +347,7 @@ class SandboxExecutor:
         """Terminate current sandbox."""
         try:
             if self.current_sandbox:
-                await self.current_sandbox.close()
+                self.current_sandbox.kill()
                 self.current_sandbox = None
                 logger.info("Sandbox terminated successfully")
                 return True
