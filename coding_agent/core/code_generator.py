@@ -227,30 +227,55 @@ class CodeGenerator:
     def _llm_generate_content(self, intent: UserIntent, language: Language, filename: str) -> str:
         """Use LLM to generate code content."""
         
-        system_prompt = f"""You are an expert {language.value} programmer. Generate clean, well-documented code based on the user's request.
+        system_prompt = f"""You are an expert {language.value} programmer. Generate production-quality, working code based on the user's request.
 
-Guidelines:
-- Write production-ready code with proper error handling
-- Include appropriate comments and docstrings
-- Follow language-specific best practices
-- Make code modular and reusable
-- Include necessary imports
+CRITICAL RULES:
+- Return ONLY the actual code, nothing else
+- NO markdown formatting (no ```), NO explanations, NO comments about the code
+- Include proper imports, error handling, and documentation within the code
+- Write complete, runnable code that solves the exact problem
+- Follow {language.value} best practices and conventions
+- Make it production-ready, not just a simple example
 
-Generate only the code content, no explanations or markdown formatting."""
+Return the raw code file content ONLY."""
 
-        user_prompt = f"""
-Create a {language.value} file named {filename} with the following requirements:
+        user_prompt = f"""Generate complete, working {language.value} code for:
+
 {intent.context}
 
-Additional parameters: {intent.parameters}
-"""
+Requirements:
+- Make it functional and production-ready
+- Include all necessary imports
+- Add proper docstrings and comments
+- Include error handling where appropriate
+- If it's a function, add example usage in if __name__ == "__main__"
+- Make it self-contained and runnable
+
+Return ONLY the code, no markdown, no explanations."""
 
         try:
             response = self.llm_client.generate_response(user_prompt, system_prompt)
-            return response.strip()
+            # Clean the response - remove markdown code blocks if present
+            clean_code = self._extract_code_from_response(response)
+            return clean_code.strip()
         except Exception as e:
             logger.error(f"LLM content generation failed: {e}")
             return self._fallback_content_generation(intent, language)
+    
+    def _extract_code_from_response(self, response: str) -> str:
+        """Extract clean code from LLM response, removing markdown formatting."""
+        import re
+        
+        # Remove markdown code blocks
+        code_block_pattern = r'```(?:\w+)?\n?(.*?)```'
+        matches = re.findall(code_block_pattern, response, re.DOTALL)
+        
+        if matches:
+            # Return the largest code block (most likely the main code)
+            return max(matches, key=len)
+        
+        # If no code blocks found, return the response as-is
+        return response
     
     def _llm_generate_modifications(self, intent: UserIntent, existing_content: str, filename: str) -> List[CodeEdit]:
         """Use LLM to generate code modifications."""
