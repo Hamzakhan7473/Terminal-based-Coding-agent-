@@ -52,7 +52,7 @@ class EnhancedCodingAgent:
             self.ui = EnhancedUI(console)
             
             # Show loading
-            console.print("[dim]🚀 Initializing Enhanced AI Coding Agent...[/dim]")
+            console.print("[dim]>> Initializing AI Coding Agent...[/dim]")
             
             # Initialize components
             self.llm_client = LLMClientFactory.create_default_client()
@@ -62,17 +62,17 @@ class EnhancedCodingAgent:
             self.executor = SandboxExecutor()
             
             # Index codebase
-            console.print("[dim]🔍 Indexing codebase...[/dim]", end=" ")
+            console.print("[dim]>> Indexing codebase...[/dim]", end=" ")
             self.codebase_indexer = CodebaseIndexer(".")
             
             if not self.codebase_indexer.load_index():
                 stats = self.codebase_indexer.index_codebase()
                 self.codebase_indexer.save_index()
-                console.print(f"[green]✓[/green] {stats['total_files']} files")
+                console.print(f"[green]DONE[/green] ({stats['total_files']} files)")
             else:
-                console.print("[green]✓[/green] Loaded")
+                console.print("[green]LOADED[/green] (cached)")
             
-            self.ui.show_notification("All systems operational!", "success")
+            console.print("[bold green]>> All systems operational[/bold green]")
             
             return True
             
@@ -83,20 +83,20 @@ class EnhancedCodingAgent:
     def print_welcome(self):
         """Print beautiful welcome screen."""
         welcome = Panel.fit(
-            "[bold cyan]🎨 Enhanced AI Coding Assistant[/bold cyan]\n\n"
-            "[bold]New Features:[/bold]\n"
-            "  • 📁 File browser with tree view\n"
-            "  • 🔄 Visual diffs with colors\n"
-            "  • 💻 Live code preview\n"
-            "  • 🧠 Complete codebase awareness\n"
-            "  • ⌨️  Enhanced commands\n\n"
-            "[dim]Powered by GPT-4, E2B Sandbox - Like Cursor++[/dim]",
+            "[bold cyan]AI CODING ASSISTANT[/bold cyan]\n\n"
+            "[bold]Features:[/bold]\n"
+            "  > File browser with tree view\n"
+            "  > Visual diffs with colors\n"
+            "  > Live code preview\n"
+            "  > Complete codebase awareness\n"
+            "  > AI-powered code generation\n\n"
+            "[dim]Powered by GPT-4 | E2B Sandbox | Production Ready[/dim]",
             border_style="cyan"
         )
         console.print(welcome)
         
         console.print("\n[bold]What can I help you code today?[/bold]")
-        console.print("[bold green]✨ I know your entire codebase![/bold green]\n")
+        console.print("[bold green]> AI has indexed your entire codebase[/bold green]\n")
         
         # Show commands
         commands = [
@@ -115,11 +115,11 @@ class EnhancedCodingAgent:
     async def handle_browse_command(self):
         """Show file browser."""
         tree = self.ui.render_file_browser(".", self.current_file)
-        console.print(Panel(tree, title="📁 Project Files", border_style="cyan"))
+        console.print(Panel(tree, title="[bold cyan]PROJECT FILES", border_style="cyan"))
         
         # Show stats
         files = self.ui.get_file_list(".")
-        console.print(f"\n[dim]Total: {len(files)} files[/dim]")
+        console.print(f"\n[dim]>> Total: {len(files)} files in project[/dim]")
     
     async def handle_edit_command(self, file_path: str):
         """Open file for editing."""
@@ -136,9 +136,9 @@ class EnhancedCodingAgent:
         # Get context
         if self.codebase_indexer:
             context = self.codebase_indexer.get_context_for_file(file_path)
-            console.print(Panel(context, title="📊 File Context", border_style="blue", expand=False))
+            console.print(Panel(context, title="[bold blue]FILE CONTEXT", border_style="blue", expand=False))
         
-        self.ui.show_notification(f"Opened: {file_path}", "success")
+        console.print(f"[green]>> Opened: {file_path}[/green]")
     
     async def handle_diff_command(self, old_content: str, new_content: str, file_path: str):
         """Show diff between versions."""
@@ -155,7 +155,7 @@ class EnhancedCodingAgent:
     
     async def handle_code_generation(self, user_input: str):
         """Handle code generation with live preview."""
-        console.print("[cyan]💻 Generating code...[/cyan]")
+        console.print("[cyan]>> AI is generating code...[/cyan]")
         
         # Parse intent
         intent = self.parser.parse_intent(user_input, self.context)
@@ -169,11 +169,12 @@ class EnhancedCodingAgent:
         code_edits = self.generator.generate_code(intent)
         
         if not code_edits:
-            self.ui.show_notification("Could not generate code", "warning")
+            console.print("[yellow]WARNING: Could not generate code[/yellow]")
             return
         
         for edit in code_edits:
             # Show live preview
+            console.print("\n[bold green]AI GENERATED CODE:[/bold green]")
             preview = self.ui.render_code_preview_panel(edit.content, intent.language.value if intent.language else "python")
             console.print("\n")
             console.print(preview)
@@ -182,7 +183,7 @@ class EnhancedCodingAgent:
             if self.codebase_indexer and edit.file_path in self.codebase_indexer.index:
                 related = self.codebase_indexer.get_related_files(edit.file_path, depth=1)
                 if related:
-                    console.print(f"\n[dim]💡 Related files: {', '.join(list(related)[:3])}[/dim]")
+                    console.print(f"\n[dim]>> Related files: {', '.join(list(related)[:3])}[/dim]")
             
             # Ask to save
             save = Prompt.ask(
@@ -202,7 +203,7 @@ class EnhancedCodingAgent:
             if save == "y":
                 success = self.file_manager.write_file(edit.file_path, edit.content)
                 if success:
-                    self.ui.show_notification(f"Saved: {edit.file_path}", "success")
+                    console.print(f"[bold green]>> SAVED: {edit.file_path}[/bold green]")
                     self.current_file = edit.file_path
                     
                     # Ask to execute if Python
@@ -211,25 +212,25 @@ class EnhancedCodingAgent:
                         if execute == "y":
                             await self.execute_code(edit.content)
                 else:
-                    self.ui.show_notification(f"Failed to save: {edit.file_path}", "error")
+                    console.print(f"[bold red]>> ERROR: Failed to save {edit.file_path}[/bold red]")
     
     async def execute_code(self, code: str):
         """Execute code with nice output."""
-        console.print("\n[cyan]⚡ Executing in secure sandbox...[/cyan]")
+        console.print("\n[cyan]>> Executing in secure sandbox...[/cyan]")
         
         result = await self.executor.execute_code(code, "python")
         
         # Show results
         if result.success:
-            console.print(f"\n[bold green]✓ Execution Completed[/bold green] [dim]({result.execution_time:.2f}s)[/dim]")
+            console.print(f"\n[bold green]>> EXECUTION COMPLETED[/bold green] [dim]({result.execution_time:.2f}s)[/dim]")
         else:
-            console.print(f"\n[bold red]✗ Execution Failed[/bold red] [dim]({result.execution_time:.2f}s)[/dim]")
+            console.print(f"\n[bold red]>> EXECUTION FAILED[/bold red] [dim]({result.execution_time:.2f}s)[/dim]")
         
         if result.stdout:
-            console.print(Panel(result.stdout, title="📤 Output", border_style="green"))
+            console.print(Panel(result.stdout, title="[bold green]OUTPUT", border_style="green"))
         
         if result.stderr:
-            console.print(Panel(result.stderr, title="📥 Errors", border_style="red"))
+            console.print(Panel(result.stderr, title="[bold red]ERRORS", border_style="red"))
     
     def get_status_info(self) -> dict:
         """Get current status information."""
@@ -284,7 +285,7 @@ class EnhancedCodingAgent:
                     if user_input.lower() == 'codebase':
                         if self.codebase_indexer:
                             summary = self.codebase_indexer.get_project_summary()
-                            console.print(Panel(summary, title="📊 Codebase", border_style="cyan"))
+                            console.print(Panel(summary, title="[bold cyan]CODEBASE OVERVIEW", border_style="cyan"))
                         continue
                     
                     if user_input.lower().startswith('find '):
@@ -292,11 +293,11 @@ class EnhancedCodingAgent:
                         if self.codebase_indexer:
                             results = self.codebase_indexer.search_codebase(query, limit=10)
                             if results:
-                                console.print(f"\n[cyan]🔍 Found {len(results)} results:[/cyan]\n")
+                                console.print(f"\n[cyan]>> Search results for '{query}': {len(results)} found[/cyan]\n")
                                 for i, result in enumerate(results, 1):
-                                    console.print(f"{i}. [bold]{result['file']}[/bold] [dim](score: {result['score']})[/dim]")
+                                    console.print(f"{i}. [bold]{result['file']}[/bold] [dim](relevance: {result['score']})[/dim]")
                             else:
-                                self.ui.show_notification("No results found", "warning")
+                                console.print("[yellow]>> No results found[/yellow]")
                         continue
                     
                     if user_input.lower() == 'help':
