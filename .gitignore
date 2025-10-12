@@ -167,3 +167,4 @@ cython_debug/
 coding_agent_errors.log
 temp_execution.py
 *.tmp
+.codebase_index.json

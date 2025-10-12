@@ -33,6 +33,7 @@ class CursorLikeAgent:
         self.generator = None
         self.executor = None
         self.file_manager = None
+        self.codebase_indexer = None  # NEW: Codebase awareness!
         
     async def initialize(self):
         """Initialize all components."""
@@ -42,6 +43,7 @@ class CursorLikeAgent:
             from coding_agent.core.code_generator import CodeGenerator
             from coding_agent.execution.sandbox import SandboxExecutor
             from coding_agent.utils.file_manager import FileManager
+            from coding_agent.context.codebase_indexer import CodebaseIndexer
             
             # Initialize components
             self.llm_client = LLMClientFactory.create_default_client()
@@ -50,10 +52,23 @@ class CursorLikeAgent:
             self.generator = CodeGenerator(self.llm_client, self.file_manager)
             self.executor = SandboxExecutor()
             
+            # NEW: Initialize codebase indexer
+            console.print("[dim]🔍 Indexing codebase...[/dim]", end=" ")
+            self.codebase_indexer = CodebaseIndexer(".")
+            
+            # Try to load existing index, otherwise create new one
+            if not self.codebase_indexer.load_index():
+                stats = self.codebase_indexer.index_codebase()
+                self.codebase_indexer.save_index()
+                console.print(f"[green]✓[/green] Indexed {stats['total_files']} files")
+            else:
+                console.print("[green]✓[/green] Loaded from cache")
+            
             console.print(Panel.fit(
                 "[bold cyan]🤖 AI Coding Assistant[/bold cyan]\n"
                 "[dim]Powered by GPT-4, E2B Sandbox - Like Cursor for Terminal[/dim]\n"
-                "[green]✓[/green] All systems operational",
+                "[green]✓[/green] All systems operational\n"
+                "[green]✓[/green] Codebase indexed (AI knows your entire project!)",
                 border_style="cyan"
             ))
             
@@ -66,13 +81,14 @@ class CursorLikeAgent:
     def print_banner(self):
         """Print welcome banner."""
         console.print("\n[bold]What can I help you code today?[/bold]")
-        console.print("[dim]Examples:[/dim]")
+        console.print("[bold green]✨ I know your entire codebase![/bold green]")
+        console.print("\n[dim]Examples:[/dim]")
         console.print("  • Create a REST API with Flask")
         console.print("  • Write a function to scrape a website")
-        console.print("  • Build a data processing pipeline")
-        console.print("  • Implement quicksort algorithm")
-        console.print("  • Debug my code / Explain this function")
-        console.print("\n[dim]Type 'exit' to quit, 'help' for more info[/dim]\n")
+        console.print("  • Add authentication to my existing API")
+        console.print("  • Refactor the user management code")
+        console.print("  • Find where authentication is handled")
+        console.print("\n[dim]Commands: 'help' | 'codebase' | 'find <query>' | 'status' | 'exit'[/dim]\n")
     
     async def process_request(self, user_input: str):
         """Process user request with AI capabilities."""
@@ -269,17 +285,27 @@ Provide:
         """Handle general coding queries with AI."""
         console.print("[cyan]🤖 AI Assistant responding...[/cyan]")
         
-        # Build context-aware prompt
+        # Build context-aware prompt with codebase knowledge
         context_str = ""
         if self.context.get('last_language'):
             context_str += f"Working with {self.context['last_language']}. "
         
-        prompt = f"""You are an expert coding assistant. Help with this request:
+        # NEW: Add codebase context!
+        codebase_context = ""
+        if self.codebase_indexer:
+            codebase_context = self.codebase_indexer.get_full_context(user_input, max_files=3)
+        
+        prompt = f"""You are an expert coding assistant with COMPLETE knowledge of the user's codebase.
 
-{user_input}
+USER REQUEST: {user_input}
+
+CODEBASE CONTEXT:
+{codebase_context}
 
 {context_str}
 
+Use your knowledge of the existing codebase to provide contextually relevant suggestions.
+If the user asks to add/modify something, consider existing files and patterns.
 Provide clear, actionable code and explanations. Use markdown formatting."""
 
         response = self.llm_client.generate_response(prompt)
@@ -295,10 +321,11 @@ Provide clear, actionable code and explanations. Use markdown formatting."""
 
 ## What I Can Do
 
-**Code Generation**
+**Code Generation (Context-Aware!)**
 - "Create a REST API with Flask"
-- "Write a binary search function"
-- "Build a web scraper"
+- "Add authentication to my existing API"
+- "Write tests for the UserService class"
+- "Refactor the authentication code"
 
 **Code Execution**
 - "Run this code"
@@ -315,22 +342,30 @@ Provide clear, actionable code and explanations. Use markdown formatting."""
 - "What does this code do?"
 - "How does recursion work?"
 
-**General Help**
-- "How do I connect to a database?"
-- "Best way to handle errors in Python"
-- "Explain async/await"
-
-## Tips
-- Be specific about what you want
-- Mention the programming language if not Python
-- I maintain context across our conversation
-- All code runs in a secure sandbox
+**Codebase Navigation 🆕**
+- "Find where authentication is handled"
+- "Show me all API endpoints"
+- "What files import UserModel?"
 
 ## Commands
+
+### Basic
 - `help` - Show this help
 - `status` - Show session info  
 - `clear` - Clear screen
 - `exit` - Quit assistant
+
+### Codebase Commands 🆕
+- `codebase` - Show project structure and stats
+- `find <query>` - Search for files, functions, or classes
+- `reindex` - Rebuild codebase index
+
+## Tips
+- ✨ I know your ENTIRE codebase! 
+- Ask me about existing files and I'll suggest related changes
+- I can refactor across multiple files
+- All code runs in a secure sandbox
+- I maintain context across our conversation
 """
         md = Markdown(help_text)
         console.print(Panel(md, border_style="cyan", title="📖 Help"))
@@ -343,6 +378,56 @@ Provide clear, actionable code and explanations. Use markdown formatting."""
         if self.context.get('last_language'):
             console.print(f"Working with: [dim]{self.context['last_language']}[/dim]")
         console.print()
+    
+    def show_codebase_info(self):
+        """Show codebase information."""
+        if not self.codebase_indexer:
+            console.print("[yellow]Codebase not indexed[/yellow]")
+            return
+        
+        summary = self.codebase_indexer.get_project_summary()
+        console.print(Panel(summary, title="🗂️  Codebase Info", border_style="cyan"))
+    
+    def search_codebase(self, query: str):
+        """Search codebase for query."""
+        if not self.codebase_indexer:
+            console.print("[yellow]Codebase not indexed[/yellow]")
+            return
+        
+        console.print(f"\n[cyan]🔍 Searching for: {query}[/cyan]\n")
+        results = self.codebase_indexer.search_codebase(query, limit=10)
+        
+        if not results:
+            console.print("[yellow]No results found[/yellow]")
+            return
+        
+        for i, result in enumerate(results, 1):
+            file_path = result['file']
+            score = result['score']
+            info = result['info']
+            
+            console.print(f"[bold]{i}. {file_path}[/bold] [dim](score: {score})[/dim]")
+            console.print(f"   [dim]{info['language']} • {info['lines']} lines[/dim]")
+            
+            # Show matching symbols
+            if 'symbols' in info:
+                matching_symbols = [s for s in info['symbols'] if query.lower() in s['name'].lower()]
+                if matching_symbols:
+                    console.print(f"   [green]Symbols:[/green] {', '.join(s['name'] for s in matching_symbols[:3])}")
+            console.print()
+    
+    async def reindex_codebase(self):
+        """Reindex the codebase."""
+        if not self.codebase_indexer:
+            console.print("[yellow]Codebase indexer not available[/yellow]")
+            return
+        
+        console.print("[cyan]🔄 Reindexing codebase...[/cyan]")
+        stats = self.codebase_indexer.index_codebase()
+        self.codebase_indexer.save_index()
+        
+        console.print(f"[green]✓ Reindexed {stats['total_files']} files[/green]")
+        console.print(f"[dim]Found {stats['total_symbols']} symbols across {len(stats['languages'])} languages[/dim]")
     
     async def run(self):
         """Main run loop."""
@@ -377,6 +462,20 @@ Provide clear, actionable code and explanations. Use markdown formatting."""
                     
                     if user_input.lower() == 'help':
                         self.show_help()
+                        continue
+                    
+                    # NEW: Codebase commands
+                    if user_input.lower() == 'codebase':
+                        self.show_codebase_info()
+                        continue
+                    
+                    if user_input.lower().startswith('find '):
+                        query = user_input[5:].strip()
+                        self.search_codebase(query)
+                        continue
+                    
+                    if user_input.lower() == 'reindex':
+                        await self.reindex_codebase()
                         continue
                     
                     # Process the request
