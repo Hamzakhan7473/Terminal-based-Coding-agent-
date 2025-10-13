@@ -1,4 +1,4 @@
-# 🤖 Terminal-based AI Coding Agent
+# Terminal-based AI Coding Agent
 
 A comprehensive AI-powered coding assistant that accepts natural language instructions, interprets them into structured code generation commands, and manages an interactive development workflow with sandboxed execution.
 
@@ -7,7 +7,7 @@ A comprehensive AI-powered coding assistant that accepts natural language instru
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-purple.svg)](https://openai.com)
 [![E2B](https://img.shields.io/badge/E2B-Sandbox-orange.svg)](https://e2b.dev)
 
-## 🌟 Features
+## Features
 
 - **Natural Language Interface**: Communicate with the AI using plain English
 - **Multi-Model Support**: Integration with OpenAI GPT-4 and Anthropic Claude
@@ -17,7 +17,7 @@ A comprehensive AI-powered coding assistant that accepts natural language instru
 - **Safety First**: Built-in safety checks and resource limits
 - **Rich CLI**: Beautiful terminal interface with progress indicators and syntax highlighting
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -66,32 +66,32 @@ pip install -e .
 coding-agent
 ```
 
-## 💬 Example Interactions
+## Example Interactions
 
 ```bash
 # Create a new Python function
 You: Create a Python function for quicksort algorithm
-Agent: 🤖 I'll create a quicksort function for you...
-✅ Created: quicksort.py
+Agent: I'll create a quicksort function for you...
+Created: quicksort.py
 
 # Edit existing code
 You: Add error handling to utils.py
-Agent: 📝 Analyzing utils.py and adding error handling...
-✅ Modified: utils.py
+Agent: Analyzing utils.py and adding error handling...
+Modified: utils.py
 
 # Execute and test code
 You: Run the quicksort function with test data
-Agent: 🚀 Executing in sandbox...
-📊 Results: Success (0.05s)
-📤 Output: [1, 2, 3, 4, 5]
+Agent: Executing in sandbox...
+Results: Success (0.05s)
+Output: [1, 2, 3, 4, 5]
 
 # Debug issues
 You: Fix the bug in my sorting function
-Agent: 🔍 Analyzing code for issues...
-✅ Fixed: Index out of bounds error
+Agent: Analyzing code for issues...
+Fixed: Index out of bounds error
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Components
 
@@ -126,7 +126,7 @@ graph TD
     G --> H[Response to User]
 ```
 
-## 🔬 Research & Methodology
+## Research & Methodology
 
 ### PEPAS Framework
 
@@ -179,7 +179,7 @@ This project follows the **PEPAS** (Problem-Environment-Person-Artifact-Situatio
 
 4. **Adaptive Interface Design**: Rich CLI that adapts to different user skill levels and provides appropriate feedback and suggestions.
 
-## 🛡️ Safety & Security
+## Safety & Security
 
 ### Code Safety Measures
 
@@ -191,21 +191,21 @@ This project follows the **PEPAS** (Problem-Environment-Person-Artifact-Situatio
 
 ### Supported Operations
 
-✅ **Safe Operations**:
+**Safe Operations**:
 - File creation and editing
 - Function and class definitions
 - Data processing and algorithms
 - Testing and debugging
 - Documentation generation
 
-❌ **Blocked Operations**:
+**Blocked Operations**:
 - System-level commands
 - Network requests to external services
 - File system access outside project directory
 - Process spawning and system calls
 - Import of dangerous modules
 
-## 📊 Performance Metrics
+## Performance Metrics
 
 ### Intent Parsing Accuracy
 - **Pattern Matching**: 85% accuracy for common operations
@@ -222,7 +222,7 @@ This project follows the **PEPAS** (Problem-Environment-Person-Artifact-Situatio
 - **Code Execution**: Real-time with progress indicators
 - **Resource Usage**: <512MB RAM, 30s timeout per execution
 
-## 🔧 Advanced Features
+## Advanced Features
 
 ### Multi-Language Support
 
@@ -247,7 +247,7 @@ Currently supports:
 - **CI/CD Pipeline**: Supports automated testing and deployment
 - **API Endpoints**: RESTful API for programmatic access
 
-## 📈 Roadmap
+## Roadmap
 
 ### Phase 1 (Current)
 - [x] Core CLI implementation
@@ -270,7 +270,7 @@ Currently supports:
 - [ ] Enterprise security features
 - [ ] Mobile app companion
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
@@ -296,24 +296,24 @@ flake8 coding_agent/
 black coding_agent/
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Contact & Support
+## Contact & Support
 
 ### Author
 **Abu Hamza Khan**
-- 📧 Email: [hamzakhan@taxora.ai](mailto:hamzakhan@taxora.ai)
-- 💼 LinkedIn: [abuhamzakhan](https://www.linkedin.com/in/abuhamzakhan/)
-- 🐙 GitHub: [Hamzakhan7473](https://github.com/Hamzakhan7473)
+- Email: [hamzakhan@taxora.ai](mailto:hamzakhan@taxora.ai)
+- LinkedIn: [abuhamzakhan](https://www.linkedin.com/in/abuhamzakhan/)
+- GitHub: [Hamzakhan7473](https://github.com/Hamzakhan7473)
 
 ### Support
-- 📖 Documentation: [Wiki](https://github.com/Hamzakhan7473/Terminal-based-Coding-agent-/wiki)
-- 🐛 Bug Reports: [Issues](https://github.com/Hamzakhan7473/Terminal-based-Coding-agent-/issues)
-- 💡 Feature Requests: [Discussions](https://github.com/Hamzakhan7473/Terminal-based-Coding-agent-/discussions)
+- Documentation: [Wiki](https://github.com/Hamzakhan7473/Terminal-based-Coding-agent-/wiki)
+- Bug Reports: [Issues](https://github.com/Hamzakhan7473/Terminal-based-Coding-agent-/issues)
+- Feature Requests: [Discussions](https://github.com/Hamzakhan7473/Terminal-based-Coding-agent-/discussions)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **OpenAI** for providing GPT-4 API access
 - **Anthropic** for Claude API integration
@@ -322,7 +322,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Click** for robust CLI framework
 - **Pydantic** for data validation and modeling
 
-## 📚 References
+## References
 
 1. Brown, T., et al. (2020). "Language Models are Few-Shot Learners." *NeurIPS*.
 2. Chen, M., et al. (2021). "Evaluating Large Language Models Trained on Code." *arXiv*.
@@ -332,6 +332,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <strong>Built with ❤️ by Abu Hamza Khan</strong><br>
+  <strong>Built by Abu Hamza Khan</strong><br>
   <em>Empowering developers through AI-assisted coding</em>
 </div>

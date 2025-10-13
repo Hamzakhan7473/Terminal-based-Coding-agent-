@@ -1,13 +1,13 @@
-# 🚀 Quick Start Guide - Terminal-based AI Coding Agent
+# Quick Start Guide - Terminal-based AI Coding Agent
 
-## ✅ Backend Status: FULLY OPERATIONAL
+## Backend Status: FULLY OPERATIONAL
 
 All API connections are configured and working:
-- ✅ OpenAI API (GPT-4)
-- ✅ Anthropic API (Claude)
-- ✅ E2B Sandbox (Code Execution)
+- OpenAI API (GPT-4)
+- Anthropic API (Claude)
+- E2B Sandbox (Code Execution)
 
-## 🎯 How to Use
+## How to Use
 
 ### 1. Run the Simplified Demo Agent
 ```bash
@@ -35,31 +35,31 @@ This demonstrates all backend features:
 python3 examples/basic_usage.py
 ```
 
-## 📝 Example Commands
+## Example Commands
 
 When running the agent, try these:
 
 ```
 You: Create a Python function for quicksort
-Agent: 💻 Generating code... [Creates quicksort.py]
+Agent: Generating code... [Creates quicksort.py]
 
 You: Make a fibonacci function
-Agent: 💻 Generating code... [Creates fibonacci.py]
+Agent: Generating code... [Creates fibonacci.py]
 
 You: Create a calculator class
-Agent: 💻 Generating code... [Creates calculator.py]
+Agent: Generating code... [Creates calculator.py]
 
 You: Run the quicksort code
-Agent: 🚀 Executing code in sandbox... [Shows results]
+Agent: Executing code in sandbox... [Shows results]
 
 You: Help
-Agent: 📋 Shows available commands
+Agent: Shows available commands
 
 You: Exit
-Agent: 👋 Thanks for using the AI Coding Agent!
+Agent: Thanks for using the AI Coding Agent!
 ```
 
-## 🔧 Configuration
+## Configuration
 
 Your `.env` file is configured with:
 - `OPENAI_API_KEY` - For GPT-4 access
@@ -73,28 +73,28 @@ To change the provider:
 2. Change `DEFAULT_LLM_PROVIDER` to `anthropic` for Claude
 3. Change `DEFAULT_MODEL` to desired model
 
-## 🎯 Key Features Tested
+## Key Features Tested
 
-1. **Natural Language Understanding** ✅
+1. **Natural Language Understanding**
    - Parses your requests into structured intents
    - 85-95% accuracy with pattern matching + LLM
 
-2. **Code Generation** ✅
+2. **Code Generation**
    - Creates Python, JavaScript, and more
    - Follows best practices
    - Includes documentation
 
-3. **Sandbox Execution** ✅
+3. **Sandbox Execution**
    - Safe code execution in isolated environment
    - Real-time output
    - Resource limits for security
 
-4. **File Management** ✅
+4. **File Management**
    - Create, edit, delete files
    - Version control integration
    - Rollback capabilities
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### If you get API errors:
 1. Check your API keys in `.env` file
@@ -111,19 +111,19 @@ python3 -c "
 from e2b_code_interpreter import Sandbox
 import os
 s = Sandbox.create(api_key=os.getenv('E2B_API_KEY'))
-print('✅ Sandbox working!')
+print('Sandbox working!')
 s.kill()
 "
 ```
 
-## 📚 Next Steps
+## Next Steps
 
 1. **Explore Examples**: Check the `examples/` directory
 2. **Read Docs**: See `README.md` for detailed documentation
 3. **Customize**: Modify settings in `.env` for your preferences
 4. **Build**: Start using the agent for your projects!
 
-## 💡 Tips
+## Tips
 
 - Start with simple requests to understand capabilities
 - The agent maintains context across conversations
@@ -134,10 +134,10 @@ s.kill()
 
 ---
 
-**Happy Coding! 🎉**
+**Happy Coding!**
 
 For issues or questions, refer to:
-- 📖 Full Documentation: `README.md`
-- 🐛 Issue Tracker: GitHub Issues
-- 💬 Discussions: GitHub Discussions
+- Full Documentation: `README.md`
+- Issue Tracker: GitHub Issues
+- Discussions: GitHub Discussions
 

@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to the Terminal-based AI Coding Agent! This document provides guidelines and information for contributors.
 
-## 🤝 How to Contribute
+## How to Contribute
 
 ### Reporting Bugs
 
@@ -32,7 +32,7 @@ Thank you for your interest in contributing to the Terminal-based AI Coding Agen
 7. Push to your branch: `git push origin feature/amazing-feature`
 8. Open a Pull Request
 
-## 📋 Development Setup
+## Development Setup
 
 ### Prerequisites
 
@@ -74,7 +74,7 @@ mypy>=1.0.0
 pre-commit>=2.20.0
 ```
 
-## 🏗️ Architecture Guidelines
+## Architecture Guidelines
 
 ### Code Organization
 
@@ -112,7 +112,7 @@ mypy coding_agent/
 pytest tests/
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Writing Tests
 
@@ -157,7 +157,7 @@ pytest tests/test_intent_parser.py
 pytest -v
 ```
 
-## 📝 Documentation
+## Documentation
 
 ### Code Documentation
 
@@ -191,7 +191,7 @@ def parse_intent(self, user_input: str, context: Optional[Dict[str, Any]] = None
     """
 ```
 
-## 🔒 Security Guidelines
+## Security Guidelines
 
 ### Code Safety
 
@@ -207,7 +207,7 @@ def parse_intent(self, user_input: str, context: Optional[Dict[str, Any]] = None
 - Block dangerous operations (file system access, network)
 - Log all execution attempts
 
-## 🚀 Release Process
+## Release Process
 
 ### Version Numbering
 
@@ -225,7 +225,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - [ ] Create release tag
 - [ ] Publish to PyPI
 
-## 💬 Communication
+## Communication
 
 ### Getting Help
 
@@ -240,7 +240,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - Focus on constructive feedback
 - Respect different viewpoints and experiences
 
-## 📋 Pull Request Template
+## Pull Request Template
 
 When creating a PR, please include:
 
@@ -266,11 +266,11 @@ Brief description of changes
 - [ ] No breaking changes (or documented)
 ```
 
-## 🏆 Recognition
+## Recognition
 
 Contributors will be recognized in:
 - README.md contributors section
 - Release notes
 - Project documentation
 
-Thank you for contributing to make AI-assisted coding more accessible! 🚀
+Thank you for contributing to make AI-assisted coding more accessible!

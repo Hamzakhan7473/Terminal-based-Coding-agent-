@@ -167,3 +167,12 @@ cython_debug/
 coding_agent_errors.log
 temp_execution.py
 *.tmp
+.codebase_index.json
+
+# Video demos and scripts
+VIDEO_DEMO_SCRIPT.md
+*_DEMO_SCRIPT.md
+DEMO_QUICK_REFERENCE.md
+demo_*.py
+demo.py
+interactive_demo.py
